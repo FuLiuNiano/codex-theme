@@ -54,4 +54,3 @@ while (-not (Test-CdpEndpoint -EndpointPort $Port)) {
 }
 
 & $nodeCommand.Source $themeScript --port $Port --theme-dir $themeDir
-

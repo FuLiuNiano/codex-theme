@@ -173,4 +173,3 @@ try {
 } finally {
   Stop-Session -WatchdogProcessId $(if ($watchdogProcess) { $watchdogProcess.Id } else { 0 }) -AdapterProcessId $(if ($adapterProcess) { $adapterProcess.Id } else { 0 }) -CodexProcessId $(if ($codexProcess) { $codexProcess.Id } else { 0 })
 }
-

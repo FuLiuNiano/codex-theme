@@ -33,4 +33,3 @@ if (Test-Path -LiteralPath $knownIcon -PathType Leaf) {
 $shortcut.Save()
 Write-Host "[codex-windows] startup shortcut removed."
 Write-Host "[codex-windows] desktop Codex shortcut replaced: $desktopShortcut"
-

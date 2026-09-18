@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "anime-line-art-startup",
+  "name": "Anime Line Art Startup",
+  "brandSubtitle": "CODEX STARTUP",
+  "tagline": "Make something wonderful.",
+  "image": "background.png",
+  "appearance": "light",
+  "art": {
+    "focusX": 0.5,
+    "focusY": 0.5,
+    "safeArea": "center",
+    "taskMode": "ambient"
+  },
+  "colors": {
+    "background": "#f4f0eb",
+    "panel": "#fffdfa",
+    "panelAlt": "#eee8e1",
+    "accent": "#8f6c65",
+    "accentAlt": "#b79a8d",
+    "secondary": "#91a6a0",
+    "highlight": "#d7a86e",
+    "text": "#332d2b",
+    "muted": "#7c716c",
+    "line": "rgba(143,108,101,.24)"
+  }
+}

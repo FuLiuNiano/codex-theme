@@ -36,4 +36,3 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\start-codex-with-them
 仓库发布时不会包含运行状态文件 `.codex-theme-session.json`、日志、账号信息或本机绝对路径。该状态文件只在本机运行期间临时生成，打包和上传时会排除。
 
 项目只包含本地脚本和主题素材；上传前应检查文本内容、压缩包清单以及媒体元数据。
-

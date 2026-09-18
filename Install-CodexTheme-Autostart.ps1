@@ -26,4 +26,3 @@ $shortcut.WindowStyle = 1
 $shortcut.Description = "Start Codex with the local theme"
 $shortcut.Save()
 Write-Host "[codex-windows] automatic startup installed: $shortcutPath"
-
