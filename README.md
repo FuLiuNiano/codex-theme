@@ -31,6 +31,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\start-codex-with-them
 
 直接点击原来的 Codex 快捷方式不会自动加载主题。
 
+如果 Windows 没有返回 Codex 的 AppX 注册信息，可以在项目目录新建 `CodexExe.local.txt`，只写一行本机 `ChatGPT.exe` 完整路径。该文件已加入 `.gitignore`，不会上传到仓库。
+
 ## 发布与隐私
 
 仓库发布时不会包含运行状态文件 `.codex-theme-session.json`、日志、账号信息或本机绝对路径。该状态文件只在本机运行期间临时生成，打包和上传时会排除。

@@ -58,6 +58,25 @@ function Resolve-CodexPath {
     if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) { throw "Codex executable not found: $fullPath" }
     return $fullPath
   }
+  $localConfigPath = Join-Path $scriptDir "CodexExe.local.txt"
+  if (Test-Path -LiteralPath $localConfigPath -PathType Leaf) {
+    $configuredPath = (Get-Content -LiteralPath $localConfigPath -Raw -ErrorAction SilentlyContinue).Trim()
+    if (-not [string]::IsNullOrWhiteSpace($configuredPath)) {
+      $fullPath = [IO.Path]::GetFullPath($configuredPath)
+      if (Test-Path -LiteralPath $fullPath -PathType Leaf) { return $fullPath }
+    }
+  }
+  $appxCommand = Get-Command Get-AppxPackage -ErrorAction SilentlyContinue
+  if ($appxCommand) {
+    try {
+      $packages = @(Get-AppxPackage -Name "OpenAI.Codex" -ErrorAction SilentlyContinue | Sort-Object Version -Descending)
+      foreach ($package in $packages) {
+        if ([string]::IsNullOrWhiteSpace($package.InstallLocation)) { continue }
+        $candidate = Join-Path $package.InstallLocation "app\ChatGPT.exe"
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) { return $candidate }
+      }
+    } catch {}
+  }
   $folders = @(Get-ChildItem -Path "C:\Program Files\WindowsApps\OpenAI.Codex*" -Directory -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
   foreach ($folder in $folders) {
     $candidate = Join-Path $folder.FullName "app\ChatGPT.exe"
