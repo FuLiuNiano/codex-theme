@@ -5,11 +5,11 @@
 ## 脚本行为
 
 - `start-codex-with-theme.ps1` 只启动你明确指定的 `ChatGPT.exe`，不会结束已有进程，也不会改文件。
-- `codex-video-theme.mjs` 只读取本目录下的 `theme.json`、PNG 和 WebM。
+- `codex-video-theme.mjs` 只读取本目录下的 `theme.json`、PNG 和本地 MP4/WebM 视频。
 - 只连接 `127.0.0.1` 的 CDP 端口，并且只接受 `app://` 的 Codex 页面。
 - 不访问互联网，不读取密码、Cookie、Token、对话内容或剪贴板。
 - 不修改 Codex 安装目录、`app.asar`、注册表或签名。
-- 视频结束后，页面保留上色图片作为背景。
+- 视频使用裁切铺满窗口，结束后保留视频中无中央文字的明亮蓝发动漫画面作为常驻背景。
 
 ## 启动
 

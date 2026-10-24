@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -9,9 +10,10 @@ const defaultThemeDir = path.join(here, "tools", "theme");
 const LOOPBACK_HOST = "127.0.0.1";
 const LOOPBACK_CDP_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
 const ID_PATTERN = /^[A-Za-z0-9._-]{1,200}$/;
-const ALLOWED_FILES = new Map([
-  ["background.png", "image/png"],
+const IMAGE_FILE = "background.png";
+const VIDEO_MIME_TYPES = new Map([
   ["codex_startup_animation.webm", "video/webm"],
+  ["codex_startup_animation.mp4", "video/mp4"],
 ]);
 
 function parseArgs(argv) {
@@ -58,11 +60,13 @@ async function loadTheme(themeDir) {
   if (config.schemaVersion !== 1 || typeof config.image !== "string") {
     throw new Error("theme.json must use schemaVersion 1 and contain an image field");
   }
-  if (path.basename(config.image) !== config.image || !ALLOWED_FILES.has(config.image)) {
+  if (path.basename(config.image) !== config.image || config.image !== IMAGE_FILE) {
     throw new Error("theme.json image must be the local background.png asset");
   }
   const imagePath = path.join(root, config.image);
-  const videoName = "codex_startup_animation.webm";
+  const videoName = ["codex_startup_animation.mp4", "codex_startup_animation.webm"]
+    .find((candidate) => VIDEO_MIME_TYPES.has(candidate) && existsSync(path.join(root, candidate)));
+  if (!videoName) throw new Error("Theme directory must contain the local startup video asset");
   const videoPath = path.join(root, videoName);
   assertSafeChild(root, imagePath, "Theme image");
   assertSafeChild(root, videoPath, "Theme video");
@@ -231,6 +235,7 @@ function makeInjectionExpression(urls) {
     const styleText = \`
       html.codex-windows-video-theme,
       html.codex-windows-video-theme body {
+        min-height: 100% !important;
         background-color: #f4f0eb !important;
         background-image: url("\${imageUrl}") !important;
         background-position: center center !important;
@@ -308,12 +313,13 @@ function makeInjectionExpression(urls) {
         animation: codex-windows-light-sweep 2.7s cubic-bezier(.2,.7,.2,1) .25s 1 both;
       }
       html.codex-windows-video-theme #\${OVERLAY_ID} .codex-windows-video-foreground {
-        position: relative;
+        position: absolute;
+        inset: 0;
         z-index: 1;
         display: block;
         width: 100vw;
         height: 100vh;
-        object-fit: contain;
+        object-fit: cover;
         border-radius: 0;
         box-shadow: none;
         transform: translateZ(0);
@@ -349,6 +355,9 @@ function makeInjectionExpression(urls) {
     if (style.textContent !== styleText) style.textContent = styleText;
     root.classList.add("codex-windows-video-theme");
     const state = window[STATE_KEY] || (window[STATE_KEY] = { startupShown: false });
+    if (state.startupAssetToken && state.startupAssetToken !== config.assetToken) {
+      document.getElementById(OVERLAY_ID)?.remove();
+    }
     if (!document.body) return { applied: true, overlay: false };
     let background = document.getElementById(BACKGROUND_ID);
     if (!background) {
@@ -361,6 +370,7 @@ function makeInjectionExpression(urls) {
     if (background.style.backgroundImage !== backgroundImage) {
       background.style.backgroundImage = backgroundImage;
     }
+    document.querySelectorAll('#' + OVERLAY_ID + '[data-done="true"]').forEach((node) => node.remove());
     const shouldShowStartup = !state.startupShown || state.startupAssetToken !== config.assetToken;
     if (shouldShowStartup && !document.getElementById(OVERLAY_ID)) {
       state.startupShown = true;
@@ -459,7 +469,7 @@ async function main() {
     imageUrl: "",
     videoUrl: "",
     imageDataUrl: `data:image/png;base64,${imageBytes.toString("base64")}`,
-    videoDataUrl: `data:video/webm;base64,${videoBytes.toString("base64")}`,
+    videoDataUrl: `data:${VIDEO_MIME_TYPES.get(path.basename(theme.videoPath))};base64,${videoBytes.toString("base64")}`,
     assetToken: `${process.pid}-${Date.now()}`,
   };
   const connection = await findCodexPage(options.port);
